@@ -62,16 +62,17 @@
 			var a = r2 + 3;
 			var b = r2 - 4;
 			var isDragOver = false;
+			var fontSize = 60;
+			var r2r = r2;
 			function draw() {
 
 				context.fillStyle = '#eee';
 				context.fillRect(0, 0, 400, 300);
 				context.fillStyle = '#f00';
-				if (d < 250 && !isDragOver) {
-					
+				if(d < 250 && !isDragOver) {
 					context.save();
 					//移动坐标系
-					context.translate(x1,y1);
+					context.translate(x1, y1);
 					var ratioX = a / r2;
 					var ratioY = b / r2;
 					context.scale(ratioX, ratioY);
@@ -81,7 +82,7 @@
 					context.closePath();
 					context.fill();
 					context.restore();
-	
+
 					context.beginPath();
 					context.moveTo(Ax, Ay);
 					context.bezierCurveTo(Ax, Ay, Ox, Oy, Dx, Dy);
@@ -90,30 +91,45 @@
 					context.lineTo(Ax, Ay);
 					context.closePath();
 					context.fill();
-					
-	//				context.fillStyle = '#f0f';
+				} else {
+					isDragOver =true;
+				}
+				
+					//				context.fillStyle = '#f0f';
 					context.save();
-					context.translate(x2,y2);
+					context.translate(x2, y2);
 					var ratioX = a / r2;
 					var ratioY = b / r2;
 					context.scale(ratioX, ratioY);
 					context.beginPath();
-					context.arc(0, 0, r2, 0, 2 * Math.PI, true);
+					if(!isDargEnd){
+						context.arc(0, 0, r2, 0, 2 * Math.PI, true);
+					} else {
+						r2r--;
+						context.arc(0, 0, r2r--, 0, 2 * Math.PI, true);
+						
+					}
+					
 					context.closePath();
 					context.fill();
 					context.restore();
 					//绘制文字
 					context.fillStyle = '#fff';
-					context.font ='60px Verdana';
+					//context.font = '60px Verdana';
 					context.save();
-					context.translate(x2-r2,y2-r2);
-					context.fillText('13',10+r2-50,75+r2-50)
+					context.translate(x2 - r2, y2 - r2);
+					if(!isDargEnd){
+						context.font = fontSize + 'px Verdana';
+						context.fillText('13', 10 + r2 - 50, 75 + r2 - 50);
+					} else {
+						context.font = fontSize-- + 'px Verdana';
+						context.fillText('13', (10 + r2 - r2r)/2, (75 + r2r - 50)/2);
+					}
 					context.restore();
-					r1 = r2 / (d/2 + r2) * r2;
-				} else {
-					isDragOver = true;
-				}
+				
+				r1 = r2 / (d / 2 + r2) * r2;
 			}
+			var isDargEnd = false;
 			//			const raf = window.requestAnimationFrame ||
 			//				window.webkitRequestAnimationFrame ||
 			//				window.mozRequestAnimationFrame ||
@@ -144,10 +160,10 @@
 					}
 				} else {
 					a = r2;
-					b = r2;     
+					b = r2;
 					aAdd = 0.1;
-					bAdd = -0.1; 
-				}             
+					bAdd = -0.1;
+				}
 
 				cal();
 				draw();
@@ -205,6 +221,9 @@
 				//var pos = getPosition(event.clientX, event.clientY,this);
 				isClick = false;
 				isMove = false;
+				if (isDragOver) {
+					isDargEnd = true;
+				}
 			}, false);
 
 			function getPosition(clientX, clientY, node) {
