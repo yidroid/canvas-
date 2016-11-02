@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+
+	<body>
+		<canvas id='canvas' width="400" height="300"></canvas>
+		<script>
+			var x1 = 100;
+			var y1 = 100;
+			var x2 = 100;
+			var y2 = 100;
+			var r1 = 50;
+			var r2 = 50;
+			var d = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+			var sin0 = (x2 - x1) / d;
+			var cos0 = (y2 - y1) / d;
+			var Ax = x1 - r1 * cos0; //20*
+			var Ay = y1 + r1 * sin0;
+			console.log('A点坐标：x:' + Ax + ',y:' + Ay);
+			var Bx = x1 + r1 * cos0;
+			var By = y1 - r1 * sin0;
+			console.log('B点坐标：x:' + Bx + ',y:' + By);
+			var Cx = x2 + r2 * cos0;
+			var Cy = y2 - r2 * sin0;
+			console.log('C点坐标：x:' + Cx + ',y:' + Cy);
+
+			var Dx = x2 - r2 * cos0;
+			var Dy = y2 + r2 * sin0;
+			console.log('D点坐标：x:' + Dx + ',y:' + Dy);
+			var Ox = Ax + d / 2 * sin0;
+			var Oy = Ay + d / 2 * cos0;
+			console.log('O点坐标：x:' + Ox + ',y:' + Oy);
+			var Px = Bx + d / 2 * sin0;
+			var Py = By + d / 2 * cos0;
+			console.log('P点坐标：x:' + Px + ',y:' + Py);
+
+			function cal() {
+				d = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+				sin0 = (x2 - x1) / d;
+				cos0 = (y2 - y1) / d;
+				Ax = x1 - r1 * cos0; //20*
+				Ay = y1 + r1 * sin0;
+				Bx = x1 + r1 * cos0;
+				By = y1 - r1 * sin0;
+				Cx = x2 + r2 * cos0;
+				Cy = y2 - r2 * sin0;
+
+				Dx = x2 - r2 * cos0;
+				Dy = y2 + r2 * sin0;
+				Ox = Ax + d / 2 * sin0;
+				Oy = Ay + d / 2 * cos0;
+				Px = Bx + d / 2 * sin0;
+				Py = By + d / 2 * cos0;
+			}
+
+			var canvas = document.getElementById('canvas');
+			var context = canvas.getContext("2d");
+			function draw() {
+				
+				context.fillStyle = '#eee';
+				context.fillRect(0, 0, 400, 300);
+				context.fillStyle = '#f00';
+				context.beginPath();
+				context.arc(x1, y1, r1, 0, 2 * Math.PI, true);
+				context.closePath();
+				context.fill();
+
+				context.beginPath();
+				context.moveTo(Ax, Ay);
+				context.bezierCurveTo(Ax, Ay, Ox, Oy, Dx, Dy);
+				context.lineTo(Cx, Cy);
+				context.bezierCurveTo(Cx, Cy, Px, Py, Bx, By);
+				context.lineTo(Ax, Ay);
+				context.closePath();
+				context.fill();
+
+				context.beginPath();
+				context.arc(x2, y2, r2, 0, 2 * Math.PI, true);
+				context.closePath();
+				context.fill();
+
+//				x2 = x2 + 1;
+//				y2 = y2 + 1;
+//				r1 = r1 - 0.1;
+				r1 = r2/(d+r2)*r2;
+				
+			}
+			const raf = window.requestAnimationFrame ||
+				window.webkitRequestAnimationFrame ||
+				window.mozRequestAnimationFrame ||
+				window.oRequestAnimationFrame ||
+				window.msRequestAnimationFrame ||
+				function(callback) {
+					window.setTimeout(callback, 1000 / 60); //每帧1000/60ms
+				};
+			(function animate() {
+				//如果已经松开，则做弹回去的动画
+				if(!isMove){
+					tan();	
+				}
+				cal();
+				draw();
+				raf(animate);
+			})();
+			function tan(){
+				var t = setInterval(function(){
+					if (x2 < 100) {
+						x2++;
+					} else if(x2 > 100){
+						x2--;
+					}
+					if (y2 < 100) {
+						y2++;
+					} else if(y2 > 100){
+						y2--;
+					}
+					if (x2 == 100 && y2 == 100) {
+						clearInterval(t);	
+					}
+				},100);
+			}
+			var isMove = false;
+			var isClick = false;
+			canvas.addEventListener('mousedown', function(event) {
+					var pos = getPosition(event.clientX, event.clientY,this);
+					if(isScope(x2,y2,r2,pos)){
+						isClick = true;
+					} else {
+						isClick = false;
+					}
+			}, false);
+			function isScope(x,y,r,pos){
+				var d = Math.sqrt(Math.pow(pos.x-x,2)+Math.pow(pos.y-y,2));
+				if (d > r) {
+					return false;					
+				} else {
+					return true;
+				}
+			}
+			canvas.addEventListener('mousemove', function(event) {
+				var pos = getPosition(event.clientX, event.clientY,this);
+				if (isScope(x2,y2,r2,pos)&&isClick) {
+					x2 = pos.x;
+					y2 = pos.y;
+					isMove = true;
+				} else {
+					x2 = 100;
+					y2 = 100;
+					isMove = false;
+				}
+			}, false);
+			canvas.addEventListener('mouseup', function(event) {
+				//var pos = getPosition(event.clientX, event.clientY,this);
+				isClick = false;
+				isMove = false;
+			}, false);
+			function getPosition(clientX, clientY,node) {
+					//文档中鼠标的位置
+					var mouseY = clientY + document.documentElement.scrollTop,
+						mouseX = clientX + document.documentElement.scrollLeft;
+					//文档中元素的位置
+					var canvasPos = getNodePosition(node);
+					//鼠标在canvas中的位置
+					var x = mouseX - canvasPos.left,
+						y = mouseY - canvasPos.top;
+					return {
+						x: x,
+						y: y
+					};
+				}
+			 function getNodePosition(node) {
+					var top = 0,
+						left = 0;
+					do {
+						top += node.offsetTop;
+						left += node.offsetLeft;
+					} while (node = node.offsetParent);
+					return {
+						top: top,
+						left: left
+					};
+				}
+		</script>
+	</body>
+
+</html>
