@@ -51,10 +51,15 @@
 
 				Dx = x2 - r2 * cos0;
 				Dy = y2 + r2 * sin0;
-				Ox = Ax + d / 2 * sin0;
-				Oy = Ay + d / 2 * cos0;
-				Px = Bx + d / 2 * sin0;
-				Py = By + d / 2 * cos0;
+//				Ox = Ax + d / 2 * sin0;
+//				Oy = Ay + d / 2 * cos0;
+//				Px = Bx + d / 2 * sin0;
+//				Py = By + d / 2 * cos0;
+				//中间点采取俩个圆心中间的坐标，效果更佳
+				Ox = (x2-x1)/2 + x1;
+				Oy = (y2-y1)/2 + y1;
+				Px = (x2-x1)/2 + x1;
+				Py = (y2-y1)/2 + y1;
 			}
 
 			var canvas = document.getElementById('canvas');
