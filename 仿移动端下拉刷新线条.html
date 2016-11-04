@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+
+	<body>
+		<canvas id='canvas' width="400" height="300"></canvas>
+		<script type="text/javascript">
+			var canvas = document.getElementById('canvas');
+			var context = canvas.getContext("2d");
+
+			//绘制背景
+			context.fillStyle = '#eee';
+			context.fillRect(0, 0, 400, 300);
+
+
+
+			//绘制线条1
+			context.fillStyle = '#f00';
+			context.lineWidth = 2;
+			context.beginPath();
+			context.moveTo(175, 300);
+			context.lineTo(175, 150);
+			context.closePath();
+			context.stroke();
+
+			//绘制线条2
+			context.fillStyle = '#f00';
+			context.lineWidth = 2;
+			context.beginPath();
+			context.moveTo(225, 0);
+			context.lineTo(225, 150);
+			context.closePath();
+			context.stroke();
+			//绘制线条1的圆弧
+			context.moveTo(175,150);
+			context.arc(200, 150, 25, Math.PI, Math.PI*(1+0.5), false);
+			context.strokeStyle = 'rgba(255,0,0,0.25)'
+			context.stroke();
+			//计算线头的终点坐标
+			var zhongx = 200 - 25*Math.cos(Math.PI*0.5);
+			var zhongy = 150 - 25*Math.sin(Math.PI*0.5);
+			
+			//绘制线条1的角
+			context.save();
+			context.translate(zhongx,zhongy);
+			context.rotate(Math.PI*(0.5 + 1/6));
+			context.moveTo(0,0);
+			context.lineTo(0,8);
+			context.strokeStyle = 'rgba(255,0,0,0.25)';
+			context.restore();
+			context.stroke();
+			
+			//绘制线条2的圆弧
+			context.moveTo(225,150);
+			context.arc(200, 150, 25, 0, Math.PI*0.5, false);
+			context.strokeStyle = 'rgba(255,0,0,0.25)'
+			context.stroke();
+			
+			//计算线头的终点坐标
+			var zhongx1 = 200 + 25*Math.cos(Math.PI*0.5);
+			var zhongy1 = 150 + 25*Math.sin(Math.PI*0.5);
+			//绘制线条2的角
+			context.save();
+			context.translate(zhongx1,zhongy1);
+			context.rotate(Math.PI*0.5 + Math.PI*1/6);
+			context.lineTo(0,-8);
+			context.strokeStyle = 'rgba(255,0,0,0.25)';
+			context.restore();
+			context.stroke();
+		</script>
+
+	</body>
+
+</html>
