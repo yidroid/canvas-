@@ -8,69 +8,161 @@
 
 	<body>
 		<canvas id='canvas' width="400" height="300"></canvas>
+		<script src="animate.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
 			var canvas = document.getElementById('canvas');
 			var context = canvas.getContext("2d");
+			var r = 25;
+			var canvasWidth = 400;
+			var canvasHeight = 300;
+			var x = canvasWidth / 2;
+			var y = canvasHeight / 2;
+			var huLength = 8;
+			var line1x = x - r;
+			var line2x = x + r;
+			var lineLength = 25 * Math.PI *5 /6-2;
+			var line1Start = 300 + lineLength;
+			var line2Start = -lineLength;
+			var isDrawArc = false;
+			var line1ArcStart = Math.PI;
+			var line2ArcStart = 0;
+			var line1Arc = 0;
+			var line2Atc = 0;
+			var rotateCanvas = false;
+			var canvasRotate = 0;
 
-			//绘制背景
-			context.fillStyle = '#eee';
-			context.fillRect(0, 0, 400, 300);
+			function draw() {
+				//绘制背景
+				context.fillStyle = '#eee';
+				context.fillRect(0, 0, canvasWidth, canvasHeight);
+				//绘制线条1
+				context.fillStyle = '#f00';
+				context.lineWidth = 2;
+				context.beginPath();
+				context.moveTo(line1x, line1Start);
+				context.lineTo(line1x, line1Start - lineLength);
+				context.closePath();
+				context.stroke();
+				//绘制线条2
+				context.fillStyle = '#f00';
+				context.beginPath();
+				context.moveTo(line2x, line2Start);
+				context.lineTo(line2x, line2Start + lineLength);
+				context.closePath();
+				context.stroke();
 
+				var zhongx = line1x;
+				var zhongy = line1Start - lineLength;
 
+				var zhongx1 = line2x;
+				var zhongy1 = line2Start + lineLength;
 
-			//绘制线条1
-			context.fillStyle = '#f00';
-			context.lineWidth = 2;
-			context.beginPath();
-			context.moveTo(175, 300);
-			context.lineTo(175, 150);
-			context.closePath();
-			context.stroke();
+				if(isDrawArc) {
+					context.save();
+					context.translate(x, y);
 
-			//绘制线条2
-			context.fillStyle = '#f00';
-			context.lineWidth = 2;
-			context.beginPath();
-			context.moveTo(225, 0);
-			context.lineTo(225, 150);
-			context.closePath();
-			context.stroke();
-			//绘制线条1的圆弧
-			context.moveTo(175,150);
-			context.arc(200, 150, 25, Math.PI, Math.PI*(1+0.5), false);
-			context.strokeStyle = 'rgba(255,0,0,0.25)'
-			context.stroke();
-			//计算线头的终点坐标
-			var zhongx = 200 - 25*Math.cos(Math.PI*0.5);
-			var zhongy = 150 - 25*Math.sin(Math.PI*0.5);
-			
-			//绘制线条1的角
-			context.save();
-			context.translate(zhongx,zhongy);
-			context.rotate(Math.PI*(0.5 + 1/6));
-			context.moveTo(0,0);
-			context.lineTo(0,8);
-			context.strokeStyle = 'rgba(255,0,0,0.25)';
-			context.restore();
-			context.stroke();
-			
-			//绘制线条2的圆弧
-			context.moveTo(225,150);
-			context.arc(200, 150, 25, 0, Math.PI*0.5, false);
-			context.strokeStyle = 'rgba(255,0,0,0.25)'
-			context.stroke();
-			
-			//计算线头的终点坐标
-			var zhongx1 = 200 + 25*Math.cos(Math.PI*0.5);
-			var zhongy1 = 150 + 25*Math.sin(Math.PI*0.5);
-			//绘制线条2的角
-			context.save();
-			context.translate(zhongx1,zhongy1);
-			context.rotate(Math.PI*0.5 + Math.PI*1/6);
-			context.lineTo(0,-8);
-			context.strokeStyle = 'rgba(255,0,0,0.25)';
-			context.restore();
-			context.stroke();
+					if(rotateCanvas) {
+						zhongx = r * Math.cos(Math.PI - line1Arc);
+						zhongy = -r * Math.sin(Math.PI - line1Arc);
+						zhongx1 = -r * Math.cos(Math.PI - line2Atc);
+						zhongy1 = r * Math.sin(Math.PI - line2Atc);
+						context.rotate(canvasRotate);
+						//绘制线条1的角
+						context.save();
+						context.translate(zhongx, zhongy);
+						context.rotate(line1Arc + Math.PI / 6);
+						context.moveTo(0, 0);
+						context.lineTo(0, huLength);
+						//context.strokeStyle = 'rgba(255,0,0,0.25)';
+						context.restore();
+						context.stroke();
+
+						//绘制线条2的角
+						context.save();
+						context.translate(zhongx1, zhongy1);
+						context.rotate(line2Atc + Math.PI / 6);
+						context.moveTo(0, 0);
+						context.lineTo(0, -huLength);
+						//context.strokeStyle = 'rgba(255,0,0,0.25)';
+						context.restore();
+						context.stroke();
+					}
+					//绘制线条1的圆弧
+					//context.moveTo(line1x, canvasHeight / 2);
+					context.moveTo(-r, 0);
+					context.arc(0, 0, r, line1ArcStart, line1ArcStart + line1Arc, false);
+					//context.strokeStyle = 'rgba(255,0,0,0.25)'
+					context.stroke();
+					//计算线1头的终点坐标
+					zhongx = x - r * Math.cos(line1Arc);
+					zhongy = y - r * Math.sin(line1Arc);
+
+					//绘制线条2的圆弧
+					context.moveTo(r, 0);
+					context.arc(0, 0, r, line2ArcStart, line2Atc, false);
+
+					//context.strokeStyle = 'rgba(255,0,0,0.25)'
+					context.stroke();
+					//计算线2头的终点坐标
+					zhongx1 = x + r * Math.cos(line2Atc);
+					zhongy1 = y + r * Math.sin(line2Atc);
+
+					context.restore();
+
+				}
+				if(!rotateCanvas) {
+					//绘制线条1的角
+					context.save();
+					context.translate(zhongx, zhongy);
+					context.rotate(line2Atc + Math.PI / 6);
+					context.moveTo(0, 0);
+					context.lineTo(0, huLength);
+					context.strokeStyle = 'rgba(255,0,0,0.25)';
+					context.restore();
+					context.stroke();
+
+					//绘制线条2的角
+					context.save();
+					context.translate(zhongx1, zhongy1);
+					context.rotate(line2Atc + Math.PI / 6);
+					context.moveTo(0, 0);
+					context.lineTo(0, -huLength);
+					context.strokeStyle = 'rgba(255,0,0,0.25)';
+					context.restore();
+					context.stroke();
+				}
+
+			}
+			(function animate1() {
+				if(line1Start - lineLength <= canvasHeight / 2) {
+					isDrawArc = true;
+
+					if(line1Arc >= Math.PI * 5 / 6) {
+						rotateCanvas = true;
+						canvasRotate += 0.04;
+						//line1ArcStart = line1ArcStart + 0.04;
+					} else {
+						line1Arc = line1Arc + 0.04;
+					}
+					if(line2Atc >= Math.PI * 5 / 6) {
+						//line2ArcStart = line2ArcStart + 0.04;
+					} else {
+						line2Atc = line2Atc + 0.04;
+					}
+					if(lineLength > 0) {
+						lineLength--;
+					} else {
+						lineLength = 0;
+					}
+
+				} else {
+					line1Start--;
+					line2Start++;
+				}
+
+				draw();
+				requestAnimationFrame(animate1);
+			})();
 		</script>
 
 	</body>
